@@ -2,15 +2,15 @@ name: Flutter Linux & Web CI
 
 on:
   push:
-    branches: [ "master"]  # Run on pushes to master or main branch
+    branches: [ "master"]
   pull_request:
-    branches: [ "master"]  # Run on pull requests to these branches
-  workflow_dispatch:  # Allows manual triggering of workflow
+    branches: [ "master" ]
+  workflow_dispatch:
 
 jobs:
   # Linux Build Job
   build-linux:
-    runs-on: ubuntu-latest  # Use Ubuntu runner
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Code
@@ -19,10 +19,11 @@ jobs:
     - name: Install Dependencies
       run: sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev
 
-    - name: Install Flutter SDK
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: "stable"  # Use the latest stable version of Flutter
+    - name: Set up Flutter SDK
+      run: |
+        git clone https://github.com/flutter/flutter.git -b stable --depth 1
+        export PATH="$PATH:`pwd`/flutter/bin"
+        flutter doctor
 
     - name: Build Linux Binary
       run: flutter build linux --release
@@ -35,16 +36,17 @@ jobs:
 
   # Web Build Job
   build-web:
-    runs-on: ubuntu-latest  # Use Ubuntu runner
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Install Flutter SDK
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: "stable"
+    - name: Set up Flutter SDK
+      run: |
+        git clone https://github.com/flutter/flutter.git -b stable --depth 1
+        export PATH="$PATH:`pwd`/flutter/bin"
+        flutter doctor
 
     - name: Build Web Version
       run: flutter build web --release
@@ -54,3 +56,4 @@ jobs:
       with:
         name: web-build
         path: build/web/
+
