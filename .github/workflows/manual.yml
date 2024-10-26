@@ -1,0 +1,20 @@
+name: Flutter iOS CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:  # Enables manual runs
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Flutter
+      run: |
+        brew install --cask flutter
+    - name: Build Flutter iOS
+      run: flutter build ios --release
