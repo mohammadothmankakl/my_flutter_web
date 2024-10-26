@@ -1,40 +1,13 @@
-name: Flutter Linux & Web CI
+name: Flutter Web CI
 
 on:
   push:
-    branches: [ "master"]
-  pull_request:
     branches: [ "master" ]
+  pull_request:
+    branches: [ "master"]
   workflow_dispatch:
 
 jobs:
-  # Linux Build Job
-  build-linux:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
-
-    - name: Install Dependencies
-      run: sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev
-
-    - name: Set up Flutter SDK
-      run: |
-        git clone https://github.com/flutter/flutter.git -b stable --depth 1
-        export PATH="$PATH:`pwd`/flutter/bin"
-        flutter doctor
-
-    - name: Build Linux Binary
-      run: flutter build linux --release
-
-    - name: Upload Linux Build Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: linux-binary
-        path: build/linux/x64/release/bundle/
-
-  # Web Build Job
   build-web:
     runs-on: ubuntu-latest
 
@@ -48,7 +21,13 @@ jobs:
         export PATH="$PATH:`pwd`/flutter/bin"
         flutter doctor
 
-    - name: Build Web Version
+    - name: Enable Web Support
+      run: flutter config --enable-web
+
+    - name: Install Dependencies
+      run: flutter pub get
+
+    - name: Build Web App
       run: flutter build web --release
 
     - name: Upload Web Build Artifact
@@ -56,4 +35,3 @@ jobs:
       with:
         name: web-build
         path: build/web/
-
